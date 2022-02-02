@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_gray"
+    tools:context=".enterpass"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="216dp">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/personalnotes" />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="395dp"
+        android:layout_height="466dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="0dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/pass_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:hint="Pin"
+            app:hintAnimationEnabled="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:passwordToggleEnabled="true"
+            app:startIconDrawable="@android:drawable/ic_lock_lock">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/get_pass"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:inputType="numberPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pass_layout"
+            android:layout_centerHorizontal="true"
+            android:text="CONFIRM" />
+
+        <Button
+            android:id="@+id/bio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pass_layout"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="@id/confirm_button"
+            android:text="Biometric" />
+
+
+
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="375dp"
+        android:layout_height="722dp">
+
+        <com.konaire.numerickeyboard.NumericKeyboard
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/bio_button"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="30dp"
+            app:field="@+id/get_pass"
+            app:fieldMaxLength="4"
+            app:keyTextColor="@color/main_text" />
+
+    </FrameLayout>
+
+</RelativeLayout>

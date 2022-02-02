@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+
+ android {
+    signingConfigs {
+        Note {
+            storeFile file('C:\\Users\\palla\\Documents\\play_key.jks')
+            storePassword 'Shreenathji@02'
+            keyPassword 'Shreenathji@02'
+            keyAlias 'Key'
+        }
+    }
+     compileSdkVersion 31
+    buildToolsVersion '30.0.3'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+
+        defaultConfig {
+            applicationId "com.pallav.notes"
+            minSdkVersion 23
+            targetSdkVersion 30
+            versionCode 11
+            versionName "GPE-1.11"
+        }
+
+        buildTypes {
+            release {
+                shrinkResources true
+                minifyEnabled true
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                shrinkResources true
+                debuggable false
+                zipAlignEnabled true
+            }
+        }
+    }
+
+    dependencies {
+        implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+        compile 'androidx.appcompat:appcompat:1.4.0-beta01'
+        compile 'androidx.recyclerview:recyclerview:1.2.1'
+        compile 'net.dankito.richtexteditor:richtexteditor-android:2.0.20'
+        implementation 'jp.wasabeef:richeditor-android:2.0.0'
+        implementation 'jp.wasabeef:richeditor-android:2.0.0'
+        compile 'com.afollestad.material-dialogs:core:0.9.0.1'
+        compile 'jp.wasabeef:richeditor-android:2.0.0'
+        implementation 'com.google.android.material:material:1.4.0'
+        implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+        testImplementation 'junit:junit:4.13.2'
+        androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+        androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+        implementation 'com.konaire.numeric-keyboard:numeric-keyboard:1.1.0'
+        implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.22'
+        implementation 'com.suddenh4x.ratingdialog:awesome-app-rating:2.3.0'
+        implementation 'com.google.android.play:core:1.10.2'
+        implementation 'androidx.cardview:cardview:1.0.0'
+        implementation "com.anggrayudi:storage:0.13.0"
+
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation 'net.dankito.richtexteditor:richtexteditor-android:2.0.20'
+    implementation 'net.dankito.richtexteditor:richtexteditor-android:2.0.20'
+    implementation 'androidx.biometric:biometric:1.2.0-alpha03'
+    implementation 'com.konaire.numeric-keyboard:numeric-keyboard:1.1.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.22'
+    implementation 'com.suddenh4x.ratingdialog:awesome-app-rating:2.3.0'
+    implementation 'com.google.android.play:core:1.10.2'
+    implementation "com.google.android.gms:play-services-auth:19.2.0"
+    implementation "com.google.android.gms:play-services-drive:17.0.0"
+    implementation "com.mikepenz:materialdrawer:6.1.2"
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+}

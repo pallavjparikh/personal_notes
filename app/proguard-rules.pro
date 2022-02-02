@@ -1,0 +1,2 @@
+-keep class tds.pallav.notes.adapter.** { *; }
+-keep class tds.pallav.notes.model.** { *; }

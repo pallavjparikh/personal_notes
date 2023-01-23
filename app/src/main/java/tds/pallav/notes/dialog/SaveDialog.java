@@ -41,7 +41,7 @@ import tds.pallav.notes.widget.FixedHeightRecyclerView;
 		private SaveListener listener;
 		private ArrayList<Folder> items;
 		private FolderAdapter adapter = null;
-		private FixedHeightRecyclerView recyclerView;
+
 		private boolean isWorking = false;
 		private boolean canceled = true;
 
@@ -87,7 +87,7 @@ import tds.pallav.notes.widget.FixedHeightRecyclerView;
 					@Override
 					public void run() {
 						isWorking = true;
-						current_path = getContext().getFilesDir().getPath();
+						current_path = Environment.DIRECTORY_DOWNLOADS;
 						try {
 							if (isDirWritable()) pathSelected();
 						} catch (Exception ignored) {
@@ -104,10 +104,10 @@ import tds.pallav.notes.widget.FixedHeightRecyclerView;
 					}
 				}.start();
 			} else {
-				((TextView) view.findViewById(R.id.title_txt)).setText(getString(title));
-				current_path = App.last_path != null ? App.last_path : Environment.getExternalStorageDirectory().getAbsolutePath();
+				((TextView) view.findViewById(R.id.title_txt)).setText("Are you sure you want to take backup?");
+				current_path = Environment.DIRECTORY_DOWNLOADS;
 
-				recyclerView = (FixedHeightRecyclerView) view.findViewById(R.id.recyclerView);
+				//recyclerView = (FixedHeightRecyclerView) view.findViewById(R.id.recyclerView);
 				items = new ArrayList<>();
 				reload();
 
@@ -165,73 +165,21 @@ import tds.pallav.notes.widget.FixedHeightRecyclerView;
 					}
 				});
 
-				view.findViewById(R.id.new_btn).setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						ContentDialog.newInstance(
-								R.string.new_folder,
-								R.string.create,
-								R.string.cancel,
-								-1,
-								R.layout.dialog_new_folder,
-								new ContentDialog.DialogListener() {
-									private EditText name_txt;
-									private boolean isCreating = false;
 
-									@Override
-									public void onPositive(ContentDialog dialog, View content) {
-										if (isCreating || !dialog.checkEditText(name_txt)) return;
-										isCreating = true;
-
-										try {
-											String folder_name = name_txt.getText().toString();
-											File folder = new File(current_path, folder_name);
-
-											int counter = 2;
-											while (folder.exists()) {
-												folder = new File(current_path, String.format(Locale.US, "%s(%d)", folder_name, counter));
-												counter++;
-											}
-
-											//noinspection ResultOfMethodCallIgnored
-											folder.mkdirs();
-											reload();
-										} catch (Exception ignored) {
-										} finally {
-											dialog.dismiss();
-										}
-									}
-
-									@Override
-									public void onNegative(ContentDialog dialog, View content) {
-										if (isCreating) return;
-										dialog.dismiss();
-									}
-
-									@Override
-									public void onNeutral(ContentDialog dialog, View content) {
-									}
-
-									@Override
-									public void onInit(View content) {
-										name_txt = (EditText) content.findViewById(R.id.name_txt);
-									}
-								}
-						).show(getFragmentManager(), "");
-					}
-				});
 			}
 		}
 
 		private void pathSelected() {
 			Calendar calendar = Calendar.getInstance(Locale.US);
-			filename_prefix = String.format(Locale.US, "%s-%d-%02d-%02d", filename_prefix, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+			filename_prefix = String.format(Locale.US, "%s-%d-%02d-%02d", filename_prefix, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
 
-			File save_path = new File(current_path, String.format("%s.%s", filename_prefix, extension));
+			File save_path = new File( Environment.getExternalStoragePublicDirectory(
+					Environment.DIRECTORY_DOWNLOADS) , String.format("%s.%s", filename_prefix, extension));
 
 			int i = 2;
 			while (save_path.exists()) {
-				save_path = new File(current_path, String.format(Locale.US, "%s(%d).%s", filename_prefix, i, extension));
+				save_path = new File( Environment.getExternalStoragePublicDirectory(
+						Environment.DIRECTORY_DOWNLOADS), String.format(Locale.US, "%s(%d).%s", filename_prefix, i, extension));
 				i++;
 			}
 
@@ -283,8 +231,8 @@ import tds.pallav.notes.widget.FixedHeightRecyclerView;
 									}
 								});
 
-								recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-								recyclerView.setAdapter(adapter);
+//								recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//								recyclerView.setAdapter(adapter);
 							} else {
 								adapter.notifyDataSetChanged();
 							}

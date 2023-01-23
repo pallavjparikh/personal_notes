@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerFragment.
 	private MainFragment fragment;
 	private Toolbar toolbar;
 	private View selectionEdit;
+	ActivityResultLauncher<Intent> resultLauncher;
+
+
 	private boolean permissionNotGranted = false;
 	private boolean checkForPermission = true;
 	public Handler handler = new Handler();
@@ -117,32 +120,32 @@ public class MainActivity extends AppCompatActivity implements RecyclerFragment.
 				.commit();
 		}
 
-		if (checkForPermission) {
-			checkForPermission = false;
-			if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-				new MaterialDialog.Builder(this)
-					.title(R.string.permission)
-					.content(R.string.storage_permission)
-					.positiveText(R.string.request)
-					.negativeText(R.string.cancel)
-					.negativeColor(ContextCompat.getColor(this, R.color.secondary_text))
-					.onPositive(new MaterialDialog.SingleButtonCallback() {
-						@Override
-						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-							dialog.dismiss();
-							requestPermission();
-						}
-					})
-					.onNegative(new MaterialDialog.SingleButtonCallback() {
-						@Override
-						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-							dialog.dismiss();
-							displayPermissionError();
-						}
-					})
-					.show();
-			}
-		}
+//		if (checkForPermission) {
+//			checkForPermission = false;
+//			if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//				new MaterialDialog.Builder(this)
+//					.title(R.string.permission)
+//					.content(R.string.storage_permission)
+//					.positiveText(R.string.request)
+//					.negativeText(R.string.cancel)
+//					.negativeColor(ContextCompat.getColor(this, R.color.secondary_text))
+//					.onPositive(new MaterialDialog.SingleButtonCallback() {
+//						@Override
+//						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//							dialog.dismiss();
+//							//requestPermission();
+//						}
+//					})
+//					.onNegative(new MaterialDialog.SingleButtonCallback() {
+//						@Override
+//						public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//							dialog.dismiss();
+//							displayPermissionError();
+//						}
+//					})
+//					.show();
+//			}
+//		}
 
 
 	}
@@ -360,66 +363,70 @@ public class MainActivity extends AppCompatActivity implements RecyclerFragment.
 	}
 
 	private void restoreData() {
-		ImportDialog.newInstance(
-			R.string.restore,
-			new String[]{App.BACKUP_EXTENSION},
-			new ImportDialog.ImportListener() {
-				@Override
-				public void onSelect(final String path) {
-					new Thread() {
-						@Override
-						public void run() {
-							try {
-								readBackupFile(path);
-
-								runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										fragment.loadItems();
-
-										Snackbar.make(fragment.fab != null ? fragment.fab : toolbar, R.string.data_restored, Snackbar.LENGTH_LONG).show();
-									}
-								});
-							} catch (final Exception e){
-								runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										new MaterialDialog.Builder(MainActivity.this)
-											.title(R.string.restore_error)
-											.positiveText(R.string.ok)
-											.content(e.getMessage())
-											.onPositive(new MaterialDialog.SingleButtonCallback() {
-												@Override
-												public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-													dialog.dismiss();
-												}
-											})
-											.show();
-									}
-								});
-							} finally {
-								interrupt();
-							}
-						}
-					}.start();
-				}
-
-				@Override
-				public void onError(String msg) {
-					new MaterialDialog.Builder(MainActivity.this)
-						.title(R.string.restore_error)
-						.positiveText(R.string.ok)
-						.content(msg)
-						.onPositive(new MaterialDialog.SingleButtonCallback() {
-							@Override
-							public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-								dialog.dismiss();
-							}
-						})
-						.show();
-				}
-			}
-		).show(getSupportFragmentManager(), "");
+		Intent intent
+				= new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("application/pdf");
+		resultLauncher.launch(intent);
+//		ImportDialog.newInstance(
+//			R.string.restore,
+//			new String[]{App.BACKUP_EXTENSION},
+//			new ImportDialog.ImportListener() {
+//				@Override
+//				public void onSelect(final String path) {
+//					new Thread() {
+//						@Override
+//						public void run() {
+//							try {
+//								readBackupFile(path);
+//
+//								runOnUiThread(new Runnable() {
+//									@Override
+//									public void run() {
+//										fragment.loadItems();
+//
+//										Snackbar.make(fragment.fab != null ? fragment.fab : toolbar, R.string.data_restored, Snackbar.LENGTH_LONG).show();
+//									}
+//								});
+//							} catch (final Exception e){
+//								runOnUiThread(new Runnable() {
+//									@Override
+//									public void run() {
+//										new MaterialDialog.Builder(MainActivity.this)
+//											.title(R.string.restore_error)
+//											.positiveText(R.string.ok)
+//											.content(e.getMessage())
+//											.onPositive(new MaterialDialog.SingleButtonCallback() {
+//												@Override
+//												public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//													dialog.dismiss();
+//												}
+//											})
+//											.show();
+//									}
+//								});
+//							} finally {
+//								interrupt();
+//							}
+//						}
+//					}.start();
+//				}
+//
+//				@Override
+//				public void onError(String msg) {
+//					new MaterialDialog.Builder(MainActivity.this)
+//						.title(R.string.restore_error)
+//						.positiveText(R.string.ok)
+//						.content(msg)
+//						.onPositive(new MaterialDialog.SingleButtonCallback() {
+//							@Override
+//							public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//								dialog.dismiss();
+//							}
+//						})
+//						.show();
+//				}
+//			}
+//		).show(getSupportFragmentManager(), "");
 	}
 
 	public void backupData() {
@@ -512,9 +519,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerFragment.
 		}
 	}
 
-	private void requestPermission() {
-		ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
-	}
+//	private void requestPermission() {
+//		ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
+//
+//	}
 
 	private void displayPermissionError() {
 		new MaterialDialog.Builder(this)
@@ -534,7 +542,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerFragment.
 				@Override
 				public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
 					dialog.dismiss();
-					requestPermission();
+					//requestPermission();
 				}
 			})
 			.show();

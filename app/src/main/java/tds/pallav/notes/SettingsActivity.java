@@ -1,14 +1,26 @@
 package tds.pallav.notes;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +32,14 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 
 import tds.pallav.notes.activity.MainActivity;
 import tds.pallav.notes.db.Controller;
@@ -34,6 +50,7 @@ import static tds.pallav.notes.activity.MainActivity.PERMISSION_REQUEST;
 
 public class SettingsActivity extends AppCompatActivity {
     private boolean permissionNotGranted = false;
+
 
 
 
@@ -169,37 +186,171 @@ public class SettingsActivity extends AppCompatActivity {
 
         }
     }
+    ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK){
+                        Intent intent = result.getData();
+                        assert intent != null;
+                        Uri uri = intent.getData();
+                        Log.d("myTag", "This is my resultlauncher");
+                        //byte[] bytes = getBytesFromUri(getApplicationContext(), uri);
+                        try {
+                            String filePath= PathUtil.getPath(getApplicationContext(), uri);
+                            readBackupFile(filePath);
+                            Log.d("myTag", filePath);
+                        } catch (URISyntaxException e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new MaterialDialog.Builder(SettingsActivity.this)
+                                            .title(R.string.restore_error)
+                                            .positiveText(R.string.ok)
+                                            .content(e.getMessage())
+                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                @Override
+                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .show();
+                                }
+                            });
+                        } catch (Exception e) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new MaterialDialog.Builder(SettingsActivity.this)
+                                            .title(R.string.restore_error)
+                                            .positiveText(R.string.ok)
+                                            .content(e.getMessage())
+                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                @Override
+                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .show();
+                                }
+                            });
+                        }
 
+
+
+
+
+
+                    }
+                }
+            }
+    );
 
 
     private void restoreData() {
-        ImportDialog.newInstance(
-                R.string.restore,
-                new String[]{App.BACKUP_EXTENSION},
-                new ImportDialog.ImportListener() {
-                    @Override
-                    public void onSelect(final String path) {
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    readBackupFile(path);
-
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
+        Intent intent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Downloads.EXTERNAL_CONTENT_URI);
+        }
+        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        intent = Intent.createChooser(intent, "select backup");
+        //startActivityForResult(intent, 1);
+        resultLauncher.launch(intent);
 
 
-                                        }
-                                    });
-                                } catch (final Exception e){
-                                    runOnUiThread(new Runnable() {
+        //readBackupFile(r);
+
+
+//        ImportDialog.newInstance(
+//                R.string.restore,
+//                new String[]{App.BACKUP_EXTENSION},
+//                new ImportDialog.ImportListener() {
+//                    @Override
+//                    public void onSelect(final String path) {
+//                        new Thread() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    readBackupFile(path);
+//
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//
+//
+//                                        }
+//                                    });
+//                                } catch (final Exception e){
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            new MaterialDialog.Builder(SettingsActivity.this)
+//                                                    .title(R.string.restore_error)
+//                                                    .positiveText(R.string.ok)
+//                                                    .content(e.getMessage())
+//                                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                                                        @Override
+//                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                                                            dialog.dismiss();
+//                                                        }
+//                                                    })
+//                                                    .show();
+//                                        }
+//                                    });
+//                                } finally {
+//                                    interrupt();
+//                                }
+//                            }
+//                        }.start();
+//                    }
+//
+//                    @Override
+//                    public void onError(String msg) {
+//                        new MaterialDialog.Builder(SettingsActivity.this)
+//                                .title(R.string.restore_error)
+//                                .positiveText(R.string.ok)
+//                                .content(msg)
+//                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                                    @Override
+//                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                                        dialog.dismiss();
+//                                    }
+//                                })
+//                                .show();
+//                    }
+//                }
+//        ).show(getSupportFragmentManager(), "");
+    }
+
+    byte[] getBytesFromUri (Context context, Uri uri){
+        InputStream iStream = null;
+        try {
+
+            iStream = context.getContentResolver().openInputStream(uri);
+            JSONObject obj = new JSONObject(String.valueOf(iStream));
+            DataInputStream dis = new DataInputStream(new DataInputStream(iStream));
+            byte[] backup_data = new byte[dis.available()];
+
+            Log.d(TAG, String.valueOf(backup_data));
+            JSONArray json = new JSONArray(new String(backup_data));
+            dis.close();
+            Controller.instance.readBackup(json);
+
+
+
+        }
+
+        catch (Exception ex){
+
+            runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             new MaterialDialog.Builder(SettingsActivity.this)
                                                     .title(R.string.restore_error)
                                                     .positiveText(R.string.ok)
-                                                    .content(e.getMessage())
+                                                    .content(ex.getMessage())
                                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                                         @Override
                                                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -208,32 +359,24 @@ public class SettingsActivity extends AppCompatActivity {
                                                     })
                                                     .show();
                                         }
-                                    });
-                                } finally {
-                                    interrupt();
-                                }
-                            }
-                        }.start();
-                    }
+                                   });
 
-                    @Override
-                    public void onError(String msg) {
-                        new MaterialDialog.Builder(SettingsActivity.this)
-                                .title(R.string.restore_error)
-                                .positiveText(R.string.ok)
-                                .content(msg)
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        dialog.dismiss();
-                                    }
-                                })
-                                .show();
-                    }
-                }
-        ).show(getSupportFragmentManager(), "");
+        }
+        return null;
     }
 
+
+
+    private void readBackupFile(String path) throws Exception {
+        DataInputStream dis = new DataInputStream(new FileInputStream(path));
+        byte[] backup_data = new byte[dis.available()];
+
+        dis.readFully(backup_data);
+        JSONArray json = new JSONArray(new String(backup_data));
+        dis.close();
+
+        Controller.instance.readBackup(json);
+    }
     public void backupData() {
 
         SaveDialog.newInstance(
@@ -305,15 +448,7 @@ public class SettingsActivity extends AppCompatActivity {
         ).show(getSupportFragmentManager(), "");
     }
 
-    private void readBackupFile(String path) throws Exception {
-        DataInputStream dis = new DataInputStream(new FileInputStream(path));
-        byte[] backup_data = new byte[dis.available()];
-        dis.readFully(backup_data);
-        JSONArray json = new JSONArray(new String(backup_data));
-        dis.close();
 
-        Controller.instance.readBackup(json);
-    }
 
     private void saveBackupFile(String path) throws Exception {
         FileOutputStream fos = null;
@@ -328,9 +463,9 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
-    }
+//    private void requestPermission() {
+//        ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
+//    }
 
     private void displayPermissionError() {
         new MaterialDialog.Builder(this)
@@ -350,7 +485,7 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
-                        requestPermission();
+                      //  requestPermission();
                     }
                 })
                 .show();

@@ -51,15 +51,14 @@ public class enterpass extends AppCompatActivity {
         final BiometricPrompt biometricPrompt = new BiometricPrompt.Builder(this)
                 .setTitle("Biometric login for Notes")
                 .setSubtitle("Log in using your biometric credential")
-                .setNegativeButton("Exit Notes", executor, new DialogInterface.OnClickListener() {
+
+                .setNegativeButton("Enter PIN", executor, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent a = new Intent(Intent.ACTION_MAIN);
-                        a.addCategory(Intent.CATEGORY_HOME);
-                        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(a);
+
                     }
                 }
+
 
                 ).build();
 
@@ -70,7 +69,22 @@ public class enterpass extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                biometricPrompt.authenticate(new CancellationSignal(), executor, new BiometricPrompt.AuthenticationCallback() {
+                    @Override
+                    public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+                        super.onAuthenticationSucceeded(result);
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                Toast.makeText(enterpass.this, "done", Toast.LENGTH_LONG);
+                            }
+                        });
+                    }
 
+                });
             }
         });
         biometricPrompt.authenticate(new CancellationSignal(), executor, new BiometricPrompt.AuthenticationCallback() {

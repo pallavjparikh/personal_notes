@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pallav_notes_-_Copy_(2).iml" filepath="$PROJECT_DIR$/.idea/modules/pallav_notes_-_Copy_(2).iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/pallav_notes_-_Copy_(2).app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/pallav_notes_-_Copy_(2).app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/personal_notes.iml" filepath="$PROJECT_DIR$/.idea/modules/personal_notes.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/personal_notes.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/personal_notes.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/personal_notes.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/personal_notes.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/personal_notes.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/personal_notes.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/personal_notes.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/personal_notes.app.unitTest.iml" />
     </modules>
   </component>
 </project>

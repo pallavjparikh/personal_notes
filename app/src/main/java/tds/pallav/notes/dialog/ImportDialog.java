@@ -1,5 +1,6 @@
 package tds.pallav.notes.dialog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -65,13 +66,17 @@ public class ImportDialog extends DialogFragment {
 			listener.onError(getString(R.string.no_mounted_sd));
 			dismiss();
 		} else {
-			((TextView) view.findViewById(R.id.title_txt)).setText(title);
-
-			current_path = App.last_path != null ? App.last_path : Environment.getExternalStorageDirectory().getAbsolutePath();
-
-			recyclerView = (FixedHeightRecyclerView) view.findViewById(R.id.recyclerView);
-			items = new ArrayList<>();
-			reload();
+//			Intent intent
+//					= new Intent(Intent.ACTION_GET_CONTENT);
+//			intent.setType("application/pdf");
+//			resultLauncher.launch(intent);
+//			((TextView) view.findViewById(R.id.title_txt)).setText(title);
+//
+//			current_path = App.last_path != null ? App.last_path : Environment.getExternalStorageDirectory().getAbsolutePath();
+//
+//			recyclerView = (FixedHeightRecyclerView) view.findViewById(R.id.recyclerView);
+//			items = new ArrayList<>();
+//			reload();
 
 			view.findViewById(R.id.positive_btn).setOnClickListener(new View.OnClickListener() {
 				@Override
